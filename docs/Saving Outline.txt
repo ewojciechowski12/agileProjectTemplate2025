@@ -1,0 +1,19 @@
+Saving Outline
+Name //Used For Alphabet and also for locating
+Struct <Day, Month, Year, Attendance> //Used to tack dates
+Present/Absent ratio and numbers. //Based off of the struct above
+Place Based On Attendance //Using above, will be compared to all other students and given number.
+Vector<Custom> //This will store ways to organize custom orderings
+
+First Name  Last Name   Present   Absent   Percent Attened  Attenance Place    Custom       ID
+Christopher Abney       300       0        100              1                  6           0001
+John        Johnson     150       150      50               6                  1           0002
+John        Doe         299       1        99               2                  2           0003
+Jane        Doe         299       1        99               2                  3           0004
+Alex        Abney       299       1        99               2                  5           0005
+Lilly       Wilsbacher  299       1        99               2                  4           0006
+
+
+DAY MONTH YEAR STUDENT ID ATTENDANCE...
+30  4     2025 0001       1            0002 0 0003 1 0004 1 0005 1 0006 1
+1   5     2025 0001       1            0002 1 0003 1 0004 1 0005 1 0006 1
