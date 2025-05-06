@@ -13,7 +13,10 @@
 ### Format:
 | Task ID | Task Description | User Story ID | Assigned To | Status | Dependencies |
 |---------|------------------|---------------|-------------|--------|--------------|
-| T-1 | Implement password reset email system. | US-1 | Alice | In Progress | None |
-| T-2 | Create frontend form for password reset. | US-1 | Bob | To Do | T-1 |
-| T-3 | Add User table to the database and implement password hashing and verification. | US-2 | Alice | To Do | None |
-| T-4 | Create frontend form for login. | US-2 | Bob | To Do | T-3 |
+| T-1 | Design initial menu | US-1 | UI Team | To Do | None |
+| T-2 | Design & Implement Database Tables | US-2 | Data Team | To Do | None |
+| T-3 | View Attendance Page | US-3 | UI Team | To Do | T-3 |
+| T-4 | Query Database to retrieve Attendance information | US-2 | Data Team | To Do | T-2 |
+| T-5 | Ability to add course of students | US-4 | Data Team | To Do | T-2 | 
+| T-6 | Design Take Attendance Page | US-2 | UI Team | To Do | T-1 |
+| T-7 | Database functionality to take attendance | US-2 | Data Team | To Do | T-2 |
