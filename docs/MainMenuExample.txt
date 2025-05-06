@@ -1,0 +1,8 @@
+Welcome to the Attendance Assistant
+
+1) Take Attendance
+2) Display Attendance
+3) Display Attendance on a given day
+4) Show student Attendance Info
+5) Add Course
+6) Exit
