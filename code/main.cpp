@@ -27,6 +27,21 @@ bool is_digits(string& str)
     //cout << "True" << endl;
     return toReturn;
 }
+// Helper function to read user input
+int readUserInput(){
+    string menuOption = "";
+    cin >> menuOption;
+
+    // -1 is used to return to main menu
+    if(menuOption == "-1"){
+        return -1;
+    }
+    while (is_digits(menuOption) == false){
+        cout <<"\nPlease only enter in numbers" << endl;
+        cin >> menuOption;
+    }
+    return stoi(menuOption);
+}
 int main()
 {
     bool endProgram = false;
