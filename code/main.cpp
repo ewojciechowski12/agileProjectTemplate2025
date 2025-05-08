@@ -12,21 +12,22 @@ void printMainMenu(){
     cout << "4) Add Course" << endl;
     cout << "5) Exit" << endl;
 }
+
+// Helper function to check if a string is a number
 bool is_digits(string& str)
 {
     bool toReturn = true;
     for (char ch : str) {
         int v = ch; // ASCII Val converted
-        if (!(ch >= 48 && ch <= 57)) {
-            //cout << "False" << endl;
+        if (!(ch >= 48 && ch <= 57)) {            
             toReturn = false;
         }
         
-    }
- 
-    //cout << "True" << endl;
+    } 
+    
     return toReturn;
 }
+
 // Helper function to read user input
 int readUserInput(){
     string menuOption = "";
@@ -82,21 +83,19 @@ int main()
     bool endProgram = false;
     cout << "Welcome To The Attendance Assistant\n" << endl;
     printMainMenu();
-    //cin a int to select
-    int menuSelection = 0;
-    string tempSelect = "";
+
+    // Read user input
+    int menuSelection = readUserInput();     
+
+    int course = 0;
     
     while (endProgram == false){
-        cin >> tempSelect;
-        while (is_digits(tempSelect) == false){
-        cout <<"\nPlease only enter in numbers" << endl;
-        printMainMenu();
-        cin >> tempSelect;
-        }
-        menuSelection = stoi(tempSelect);
+        
         switch (menuSelection){
-            case 1:
-                cout <<"\nTake Attendance" << endl;
+            case 1:                
+                course = displayCourses();
+                if(returnToMainMenu(course)) break;
+                displayStudents(course);
                 break;
             case 2:
                 cout <<"\nDisplay Attendance" << endl;
@@ -113,9 +112,10 @@ int main()
             default:
             cout <<"\nERR, Please only enter in the numbers to select an option" << endl;
             break;  
-            
         }
+        
         printMainMenu();
+        menuSelection = readUserInput();
     }
     return 0;
 }
