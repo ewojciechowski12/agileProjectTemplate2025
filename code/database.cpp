@@ -1,53 +1,77 @@
 #include "database.hpp"
-
+#include <vector>
+#include <string>
 
 using namespace std;
 
-Database::Database(const char* filename){
+Database::Database(const char* filename) : db(nullptr) {
     int statusOfOpen = sqlite3_open(filename, &db);
 
-    if (statusOfOpen == SQLITE_OK)
-    {
+    if (statusOfOpen == SQLITE_OK) {
         cout << "Successfully opened the database" << endl;
-    }
-    else
-    {
-        cout << "Problem opening the database" << endl;
+    } else {
+        cout << "Problem opening the database: " << sqlite3_errmsg(db) << endl;
+        db = nullptr;
     }
 }
 
+Database::~Database() {
+    if (db) {
+        sqlite3_close(db);
+        cout << "Database connection closed." << endl;
+    }
+}
 
-//TODO finish implementing function
-string Database::sql_query(const char* query){
-    sqlite3_stmt* statement;
+vector<vector<string>> Database::sql_query(sqlite3_stmt* stmt) {
+    vector<vector<string>> result;
+    if (!db) {
+        cout << "Database connection is not open." << endl;
+        return result;
+    }
 
-    int statusOfPrep = sqlite3_prepare_v2(db, query, -1, &statement, NULL);
+    int statusOfStep = sqlite3_step(stmt);
 
-    statusOfPrep = sqlite3_prepare_v2(db, "SELECT * FROM Students", -1, &statement, NULL);
+    int columnCount = sqlite3_column_count(stmt);
 
-        if (statusOfPrep == SQLITE_OK)
-        {
-            int statusOfStep = sqlite3_step(statement);
+    while (statusOfStep == SQLITE_ROW) {
+        vector<string> row;
 
-            while (statusOfStep == SQLITE_ROW)
-            {
-                int id = sqlite3_column_int(statement, 0);
-                first = (char*)sqlite3_column_text(statement, 1);
-                last = (char*)sqlite3_column_text(statement, 2);
-
-                cout << "Student Id: " << id << endl;
-                cout << "First Name: " << first << endl;
-                cout << "Last Name: " << last << endl;
-
-                statusOfStep = sqlite3_step(myStatement);
-            }
-
-            sqlite3_finalize(statement);
-        }
-        else
-        {
-            cout << "Problem creating a prepared statement" << endl;
+        for (int i = 0; i < columnCount; ++i) {
+            string data = (char*)(sqlite3_column_text(stmt, i));
+            row.push_back(data);
         }
 
-    return "";
+        result.push_back(row);
+
+        statusOfStep = sqlite3_step(stmt);
+    }
+
+    sqlite3_finalize(stmt);
+    return result;
+}
+
+vector<vector<string>> Database::get_students_by_section(int section_id){
+    vector<vector<string>> result; 
+    
+    const char* query = "SELECT Students.student_id, Students.first_name, Students.last_name "
+                    "FROM Students, StudentsInSections " 
+                    "WHERE Students.student_id = StudentsInSections.student_id "
+                    "AND StudentsInSections.section_id = ?";
+
+    cout << query << endl;
+
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) {
+        cout << "Error preparing statement: " << sqlite3_errmsg(db) << endl;
+        return result;
+    }
+
+    if (sqlite3_bind_int(stmt, 1, section_id) != SQLITE_OK) {
+        cout << "Error binding parameter: " << sqlite3_errmsg(db) << endl;
+        return result;
+    }
+
+    result = sql_query(stmt);
+    return result;
 }

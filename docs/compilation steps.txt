@@ -5,8 +5,10 @@ gcc -c sqlite3.c
 g++ -c main.cpp database.cpp
 
 #link object files
-g++ -o main sqlite3.o main.o database.object
+g++ -o main sqlite3.o main.o database.o
 
 #run program
 ./main
 
+#to run all at once in powershell
+g++ -c main.cpp database.cpp database.hpp; g++ -o main sqlite3.o main.o database.o; ./main
