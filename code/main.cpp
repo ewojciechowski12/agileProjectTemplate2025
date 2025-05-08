@@ -42,6 +42,19 @@ int readUserInput(){
     }
     return stoi(menuOption);
 }
+
+int displayCourses(){    
+
+    // TO DO : Display Courses from Database instead of harcoded
+    cout <<"\nSelect Course" << endl;
+    cout << "1) Course 1" << endl;
+    cout << "2) Course 2" << endl;
+    cout << "3) Course 3" << endl;
+    cout << "\n\nEnter -1 To Return to Main Menu" << endl; 
+    
+    return readUserInput();
+}
+
 int main()
 {
     bool endProgram = false;
