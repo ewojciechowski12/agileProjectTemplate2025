@@ -66,6 +66,17 @@ void displayStudents(int course){
     int student = readUserInput();
     cout << "\nYou selected: " << student << endl;
 }
+
+bool returnToMainMenu(int selection){
+    if(selection == -1){
+        cout << "\nReturning to Main Menu\n" << endl;
+        return true;
+    }
+
+    return false;    
+}
+
+
 int main()
 {
     bool endProgram = false;
