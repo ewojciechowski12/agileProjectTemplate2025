@@ -1,0 +1,12 @@
+#compile sqlite using c compiler
+gcc -c sqlite3.c
+
+#compile project code
+g++ -c main.cpp database.cpp
+
+#link object files
+g++ -o main sqlite3.o main.o database.object
+
+#run program
+./main
+
