@@ -55,6 +55,17 @@ int displayCourses(){
     return readUserInput();
 }
 
+void displayStudents(int course){
+    // TO DO : Display Students from Database instead of harcoded
+    cout <<"\nSelect Student" << endl;
+    cout << "1) Student 1" << endl;
+    cout << "2) Student 2" << endl;
+    cout << "3) Student 3" << endl; 
+    cout << "\n\nEnter -1 To Return to Main Menu" << endl;
+    
+    int student = readUserInput();
+    cout << "\nYou selected: " << student << endl;
+}
 int main()
 {
     bool endProgram = false;
