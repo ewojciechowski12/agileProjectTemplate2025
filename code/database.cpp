@@ -22,12 +22,8 @@ Database::~Database() {
     }
 }
 
-vector<vector<string>> Database::sql_query(sqlite3_stmt* stmt) {
+vector<vector<string>> Database::execute_query(sqlite3_stmt* stmt) {
     vector<vector<string>> result;
-    if (!db) {
-        cout << "Database connection is not open." << endl;
-        return result;
-    }
 
     int statusOfStep = sqlite3_step(stmt);
 
@@ -50,6 +46,25 @@ vector<vector<string>> Database::sql_query(sqlite3_stmt* stmt) {
     return result;
 }
 
+sqlite3_stmt* Database::prepare_and_bind(const char* query, const vector<int>& intParams) {
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) {
+        cout << "Error preparing statement: " << sqlite3_errmsg(db) << endl;
+        return nullptr;
+    }
+
+    for (int i = 0; i < intParams.size(); ++i) {
+        if (sqlite3_bind_int(stmt, i + 1, intParams[i]) != SQLITE_OK) {
+            cout << "Error binding parameter: " << sqlite3_errmsg(db) << endl;
+            sqlite3_finalize(stmt);
+            return nullptr;
+        }
+    }
+
+    return stmt;
+}
+
 vector<vector<string>> Database::get_students_by_section(int section_id){
     vector<vector<string>> result; 
     
@@ -58,20 +73,42 @@ vector<vector<string>> Database::get_students_by_section(int section_id){
                     "WHERE Students.student_id = StudentsInSections.student_id "
                     "AND StudentsInSections.section_id = ?";
 
-    cout << query << endl;
+    sqlite3_stmt* stmt = prepare_and_bind(query, {section_id});
 
-    sqlite3_stmt* stmt = nullptr;
+    if (!stmt) return {};
 
-    if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) {
-        cout << "Error preparing statement: " << sqlite3_errmsg(db) << endl;
-        return result;
-    }
-
-    if (sqlite3_bind_int(stmt, 1, section_id) != SQLITE_OK) {
-        cout << "Error binding parameter: " << sqlite3_errmsg(db) << endl;
-        return result;
-    }
-
-    result = sql_query(stmt);
-    return result;
+    return execute_query(stmt);
 }
+
+
+vector<vector<string>> Database::get_semseters(){
+    vector<vector<string>> result; 
+    
+    const char* query = "SELECT Semesters.semester_id, Semesters.name "
+                    "FROM Semesters";
+
+    sqlite3_stmt* stmt = prepare_and_bind(query, {});
+
+    if (!stmt) return {};
+
+    return execute_query(stmt);
+}
+
+
+vector<vector<string>> Database::get_courses_sections_by_semseter(int semester_id){
+    vector<vector<string>> result; 
+    
+    const char* query = "SELECT Sections.section_id, Courses.name || ' - ' || Sections.section_number "
+                    "FROM Courses, Semesters, Sections " 
+                    "WHERE Courses.semester_id = Semesters.semester_id "
+                    "AND Sections.course_id = Courses.course_id " 
+                    "AND Semesters.semester_id = ?";
+
+
+    sqlite3_stmt* stmt = prepare_and_bind(query, {semester_id});
+
+    if (!stmt) return {};
+
+    return execute_query(stmt);
+}
+
