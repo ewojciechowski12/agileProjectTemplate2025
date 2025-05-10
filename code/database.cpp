@@ -8,9 +8,9 @@ Database::Database(const char* filename) : db(nullptr) {
     int statusOfOpen = sqlite3_open(filename, &db);
 
     if (statusOfOpen == SQLITE_OK) {
-        cout << "Successfully opened the database" << endl;
+        //cout << "Successfully opened the database" << endl;
     } else {
-        cout << "Problem opening the database: " << sqlite3_errmsg(db) << endl;
+        //cout << "Problem opening the database: " << sqlite3_errmsg(db) << endl;
         db = nullptr;
     }
 }
@@ -68,7 +68,7 @@ sqlite3_stmt* Database::prepare_and_bind(const char* query, const vector<int>& i
 vector<vector<string>> Database::get_students_by_section(int section_id){
     vector<vector<string>> result; 
     
-    const char* query = "SELECT Students.student_id, Students.first_name, Students.last_name "
+    const char* query = "SELECT Students.student_id, Students.last_name, Students.first_name "
                     "FROM Students, StudentsInSections " 
                     "WHERE Students.student_id = StudentsInSections.student_id "
                     "AND StudentsInSections.section_id = ?";
@@ -110,5 +110,29 @@ vector<vector<string>> Database::get_courses_sections_by_semseter(int semester_i
     if (!stmt) return {};
 
     return execute_query(stmt);
+}
+
+vector<vector<string>> Database::get_student_name_by_id(int student_id){
+    vector<vector<string>> result; 
+    
+    const char* query = "SELECT last_name, first_name "
+                        "FROM Students "
+                        "WHERE student_id = ?";
+
+
+    sqlite3_stmt* stmt = prepare_and_bind(query, {student_id});
+
+    if (!stmt) return {};
+
+    return execute_query(stmt);
+}
+
+void Database::print_data(vector<vector<string>> data){
+    for (const auto& row : data) {
+        for (const auto& col : row) {
+            cout << col << " ";
+        }
+        cout << endl;
+    }
 }
 

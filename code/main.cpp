@@ -1,7 +1,13 @@
 #include <iostream>
 #include <string>
 #include <ctype.h>
+#include "database.hpp"
+
 using namespace std;
+
+const char* filename = "attendance_application.db";
+
+Database db = Database(filename);
 
 void printMainMenu(){
     cout <<"Enter the number to select" << endl;
@@ -45,12 +51,12 @@ int readUserInput(){
 }
 
 int displayCourses(){    
-
     // TO DO : Display Courses from Database instead of harcoded
     cout <<"\nSelect Course" << endl;
-    cout << "1) Course 1" << endl;
-    cout << "2) Course 2" << endl;
-    cout << "3) Course 3" << endl;
+
+    vector<vector<string>> data = db.get_courses_sections_by_semseter(1);
+    db.print_data(data);
+
     cout << "\n\nEnter -1 To Return to Main Menu" << endl; 
     
     return readUserInput();
@@ -59,13 +65,17 @@ int displayCourses(){
 void displayStudents(int course){
     // TO DO : Display Students from Database instead of harcoded
     cout <<"\nSelect Student" << endl;
-    cout << "1) Student 1" << endl;
-    cout << "2) Student 2" << endl;
-    cout << "3) Student 3" << endl; 
+
+    vector<vector<string>> data = db.get_students_by_section(course);
+    db.print_data(data);
+    
     cout << "\n\nEnter -1 To Return to Main Menu" << endl;
     
-    int student = readUserInput();
-    cout << "\nYou selected: " << student << endl;
+    int student_id = readUserInput();
+
+    data = db.get_student_name_by_id(student_id);
+    cout << "\nYou selected: ";
+    db.print_data(data);
 }
 
 bool returnToMainMenu(int selection){
