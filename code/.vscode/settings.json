@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.S": "c",
+        "*.s": "arm",
+        "*.py": "python",
+        "vector": "cpp",
+        "iostream": "cpp",
+        "string": "cpp"
+    }
+}
