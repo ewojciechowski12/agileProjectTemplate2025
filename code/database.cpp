@@ -146,3 +146,4 @@ bool Database::take_attendance_one(string date, string attendance_status, int se
 
     return execute_insert_query(stmt);
 }
+
