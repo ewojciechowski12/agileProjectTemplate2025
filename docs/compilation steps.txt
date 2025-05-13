@@ -1,0 +1,14 @@
+#compile sqlite using c compiler
+gcc -c sqlite3.c
+
+#compile project code
+g++ -c main.cpp database.cpp
+
+#link object files
+g++ -o main sqlite3.o main.o database.o
+
+#run program
+./main
+
+#to run all at once in powershell
+g++ -c main.cpp database.cpp database.hpp; g++ -o main sqlite3.o main.o database.o; ./main
