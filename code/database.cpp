@@ -147,3 +147,11 @@ bool Database::take_attendance_one(string date, string attendance_status, int se
     return execute_insert_query(stmt);
 }
 
+void Database::print_data(vector<vector<string>> data){
+    for (const auto& row : data) {
+        for (const auto& col : row) {
+            cout << col << " ";
+        }
+        cout << endl;
+    }
+}

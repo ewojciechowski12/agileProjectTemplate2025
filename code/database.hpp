@@ -12,7 +12,7 @@ public:
     Database(const char* filename);
     ~Database();
 
-
+    void print_data(vector<vector<string>> data);
     vector<vector<string>> get_students_by_section(int section_id);
     vector<vector<string>> get_semseters();
     vector<vector<string>> get_courses_sections_by_semseter(int semester_id);
