@@ -66,17 +66,19 @@ int displayCourses(){
 }
 
 void displayStudents(int course){
+    int stuNumber = 0;
+
     // TO DO : Display Students from Database instead of harcoded
     cout <<"\nSelect Student" << endl;
     cout << "1) Student 1" << endl;
     cout << "2) Student 2" << endl;
     cout << "3) Student 3" << endl; 
-    cout << "\n\nEnter -1 To Return to Main Menu" << endl;
-    
-    int student = readUserInput();
-    cout << "\nYou selected: " << student << endl;
+
+    cout << "\n\nEnter -1 To Return to Main Menu" << endl;    
+
 }
 
+// Function to display attendance status
 bool returnToMainMenu(int selection){
     if(selection == -1){
         cout << "\nReturning to Main Menu\n" << endl;
@@ -92,6 +94,7 @@ int displaySemester(){
     cout << "3) Fall 2023" << endl;
     cout << "\n\nEnter -1 To Return to Main Menu" << endl;
 
+<<<<<<< Updated upstream
     return readUserInput();
 }
 
@@ -109,6 +112,24 @@ void displayAttendance(int course, int date){
     cout << "Student 2: P" << endl;
     cout << "Student 3: P" << endl;
 }
+=======
+// Function to change attendance value for student
+void changeAttendanceValue(){
+    int selection = 0;
+    // To DO : database instruction to update atendance status
+    cout << "\nEnter Student Number to Edit Attendance Status" << endl;
+    
+    //validate input
+    cout << "\nSelect Attendance Status" << endl;
+    cout << "1) Late" << endl;
+    cout << "2) Absent" << endl;  
+    cout << "3) Cancel" << endl; 
+    cin >> selection;
+    
+    
+}
+
+>>>>>>> Stashed changes
 
 int main()
 {
@@ -130,6 +151,7 @@ int main()
                 course = displayCourses();
                 if(returnToMainMenu(course)) break;
                 displayStudents(course);
+                changeAttendanceValue();
                 break;
             case 2:
                 cout <<"\nDisplay Attendance" << endl;
@@ -155,6 +177,8 @@ int main()
             break;  
         }
         
+        if(endProgram) break;
+
         printMainMenu();
         menuSelection = readUserInput();
     }
