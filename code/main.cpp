@@ -16,6 +16,10 @@ void displayAttendance(int course, int date);
 void displayStudentAttendacne(int course, int studentId);
 int giveStudentId(int course);
 
+const char* filename = "attendance_application.db";
+
+Database db = Database(filename);
+
 void printMainMenu(){
     cout <<"Enter the number to select" << endl;
     cout << "1) Take Attendance" << endl;
@@ -61,9 +65,11 @@ int displayCourses(){
 
     // TO DO : Display Courses from Database instead of harcoded
     cout <<"\nSelect Course" << endl;
-    cout << "1) Course 1" << endl;
-    cout << "2) Course 2" << endl;
-    cout << "3) Course 3" << endl;
+    // cout << "1) Course 1" << endl;
+    // cout << "2) Course 2" << endl;
+    // cout << "3) Course 3" << endl;
+    vector<vector<string>> courses = db.get_courses_sections_by_semseter(1);
+    db.print_data(courses);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl; 
     
     return readUserInput();
@@ -74,10 +80,8 @@ void displayStudents(int course){
 
     // TO DO : Display Students from Database instead of harcoded
     cout <<"\nSelect Student" << endl;
-    cout << "1) Student 1" << endl;
-    cout << "2) Student 2" << endl;
-    cout << "3) Student 3" << endl; 
-
+    vector<vector<string>> students = db.get_students_by_section(course); 
+    db.print_data(students);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl;    
 
 }
