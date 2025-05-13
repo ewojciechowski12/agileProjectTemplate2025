@@ -9,14 +9,9 @@ int main()
     const char* filename = "attendance_application.db";
 
     Database db = Database(filename);
-    vector<vector<string>> data = db.get_courses_sections_by_semseter(1);
-    
-    for (const auto& row : data) {
-        for (const auto& col : row) {
-            cout << col << " ";
-        }
-        cout << endl;
-    }
+    int status = db.take_attendance_one("1/1/25", "P", 1, 1);
+
+    cout << status << endl;
 
     return 0;
 }

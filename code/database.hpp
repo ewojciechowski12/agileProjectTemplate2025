@@ -11,13 +11,17 @@ class Database {
 public:
     Database(const char* filename);
     ~Database();
-    vector<vector<string>> execute_query(sqlite3_stmt* stmt);
-    sqlite3_stmt* prepare_and_bind(const char* query, const vector<int>& intParams);
+
 
     vector<vector<string>> get_students_by_section(int section_id);
     vector<vector<string>> get_semseters();
     vector<vector<string>> get_courses_sections_by_semseter(int semester_id);
+    bool take_attendance_one(string date, string attendance_status, int section_id, int student_id);
 
 private:
     sqlite3* db;
+    
+    vector<vector<string>> execute_select_query(sqlite3_stmt* stmt);
+    bool execute_insert_query(sqlite3_stmt* stmt);
+    sqlite3_stmt* prepare_and_bind_int(const char* query, const vector<int>& intParams);
 };

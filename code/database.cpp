@@ -22,7 +22,7 @@ Database::~Database() {
     }
 }
 
-vector<vector<string>> Database::execute_query(sqlite3_stmt* stmt) {
+vector<vector<string>> Database::execute_select_query(sqlite3_stmt* stmt) {
     vector<vector<string>> result;
 
     int statusOfStep = sqlite3_step(stmt);
@@ -46,7 +46,18 @@ vector<vector<string>> Database::execute_query(sqlite3_stmt* stmt) {
     return result;
 }
 
-sqlite3_stmt* Database::prepare_and_bind(const char* query, const vector<int>& intParams) {
+bool Database::execute_insert_query(sqlite3_stmt* stmt) {
+    if(sqlite3_step(stmt) != SQLITE_DONE){
+        cout << "Error executing statement: " << sqlite3_errmsg(db) << endl;
+        return 1;
+    }
+    
+    sqlite3_finalize(stmt);
+
+    return 0;
+}
+
+sqlite3_stmt* Database::prepare_and_bind_int(const char* query, const vector<int>& intParams) {
     sqlite3_stmt* stmt = nullptr;
 
     if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) {
@@ -73,11 +84,11 @@ vector<vector<string>> Database::get_students_by_section(int section_id){
                     "WHERE Students.student_id = StudentsInSections.student_id "
                     "AND StudentsInSections.section_id = ?";
 
-    sqlite3_stmt* stmt = prepare_and_bind(query, {section_id});
+    sqlite3_stmt* stmt = prepare_and_bind_int(query, {section_id});
 
     if (!stmt) return {};
 
-    return execute_query(stmt);
+    return execute_select_query(stmt);
 }
 
 
@@ -87,11 +98,11 @@ vector<vector<string>> Database::get_semseters(){
     const char* query = "SELECT Semesters.semester_id, Semesters.name "
                     "FROM Semesters";
 
-    sqlite3_stmt* stmt = prepare_and_bind(query, {});
+    sqlite3_stmt* stmt = prepare_and_bind_int(query, {});
 
     if (!stmt) return {};
 
-    return execute_query(stmt);
+    return execute_select_query(stmt);
 }
 
 
@@ -105,10 +116,33 @@ vector<vector<string>> Database::get_courses_sections_by_semseter(int semester_i
                     "AND Semesters.semester_id = ?";
 
 
-    sqlite3_stmt* stmt = prepare_and_bind(query, {semester_id});
+    sqlite3_stmt* stmt = prepare_and_bind_int(query, {semester_id});
 
     if (!stmt) return {};
 
-    return execute_query(stmt);
+    return execute_select_query(stmt);
 }
 
+
+bool Database::take_attendance_one(string date, string attendance_status, int section_id, int student_id){
+    const char* query = "INSERT INTO Attendance (date, attendance_status, section_id, student_id) "
+                        "VALUES (?, ?, ?, ?)";
+
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) {
+        cout << "Error preparing statement: " << sqlite3_errmsg(db) << endl;
+        return 1;
+    }
+
+    if (sqlite3_bind_text(stmt, 1, date.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_text(stmt, 2, attendance_status.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_int(stmt, 3, section_id) != SQLITE_OK ||
+        sqlite3_bind_int(stmt, 4, student_id) != SQLITE_OK) {
+
+        cout << "Error binding parameters: " << sqlite3_errmsg(db) << endl;
+        return 1;
+    }
+
+    return execute_insert_query(stmt);
+}
