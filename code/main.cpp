@@ -2,6 +2,15 @@
 #include <string>
 #include <ctype.h>
 using namespace std;
+void printMainMenu();
+bool is_digits(string& str);
+int readUserInput();
+int displayCourses();
+void displayStudents(int course);
+int displaySemester();
+int displayDate();
+bool returnToMainMenu(int selection);
+void displayAttendance(int course, int date);
 
 void printMainMenu(){
     cout <<"Enter the number to select" << endl;
@@ -76,7 +85,30 @@ bool returnToMainMenu(int selection){
 
     return false;    
 }
+int displaySemester(){
+    cout <<"\nSelect Semester" << endl;
+    cout << "1) Fall 2024" << endl;
+    cout << "2) Spring 2024" << endl;
+    cout << "3) Fall 2023" << endl;
+    cout << "\n\nEnter -1 To Return to Main Menu" << endl;
 
+    return readUserInput();
+}
+
+int displayDate(){
+    cout <<"\nSelect Date" << endl;
+    cout << "1) May 1st" << endl;
+    cout << "2) May 2nd" << endl;
+    cout << "3) May 3rd" << endl;
+    cout << "\n\nEnter -1 To Return to Main Menu" << endl;
+    return readUserInput();
+}
+
+void displayAttendance(int course, int date){
+    cout << "Student 1: P" << endl;
+    cout << "Student 2: P" << endl;
+    cout << "Student 3: P" << endl;
+}
 
 int main()
 {
@@ -88,6 +120,8 @@ int main()
     int menuSelection = readUserInput();     
 
     int course = 0;
+    int semester = 0;
+    int date = 0;
     
     while (endProgram == false){
         
@@ -99,6 +133,13 @@ int main()
                 break;
             case 2:
                 cout <<"\nDisplay Attendance" << endl;
+                semester = displaySemester();
+                if(returnToMainMenu(semester)) break;
+                course = displayCourses();
+                if(returnToMainMenu(course)) break;
+                date = displayDate();
+                if(returnToMainMenu(date)) break;
+                displayAttendance(course, date);
                 break;
             case 3:
                 cout <<"\nShow Student Attendace" << endl;
