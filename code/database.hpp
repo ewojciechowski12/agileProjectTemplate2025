@@ -16,7 +16,7 @@ public:
     vector<vector<string>> get_students_by_section(int section_id);
     vector<vector<string>> get_semseters();
     vector<vector<string>> get_courses_sections_by_semseter(int semester_id);
-    bool take_attendance_one(string date, string attendance_status, int section_id, int student_id);
+    bool take_attendance(string date, string attendance_status, int section_id, int student_id);
 
 private:
     sqlite3* db;

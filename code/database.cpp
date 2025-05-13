@@ -124,7 +124,7 @@ vector<vector<string>> Database::get_courses_sections_by_semseter(int semester_i
 }
 
 
-bool Database::take_attendance_one(string date, string attendance_status, int section_id, int student_id){
+bool Database::take_attendance(string date, string attendance_status, int section_id, int student_id){
     const char* query = "INSERT INTO Attendance (date, attendance_status, section_id, student_id) "
                         "VALUES (?, ?, ?, ?)";
 

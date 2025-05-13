@@ -9,7 +9,7 @@ int main()
     const char* filename = "attendance_application.db";
 
     Database db = Database(filename);
-    int status = db.take_attendance_one("1/1/25", "P", 1, 1);
+    int status = db.take_attendance("1/1/25", "P", 1, 1);
 
     cout << status << endl;
 
