@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <ctype.h>
+#include "database.hpp"
+
 using namespace std;
 void printMainMenu();
 bool is_digits(string& str);
@@ -207,5 +209,4 @@ int main()
         printMainMenu();
         menuSelection = readUserInput();
     }
-    return 0;
 }
