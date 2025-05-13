@@ -9,11 +9,14 @@ Database::Database(const char* filename) : db(nullptr) {
 
     if (statusOfOpen == SQLITE_OK) {
         cout << "Successfully opened the database" << endl;
-    } else {
+    }
+
+    else {
         cout << "Problem opening the database: " << sqlite3_errmsg(db) << endl;
         db = nullptr;
     }
 }
+
 
 Database::~Database() {
     if (db) {
@@ -21,6 +24,7 @@ Database::~Database() {
         cout << "Database connection closed." << endl;
     }
 }
+
 
 vector<vector<string>> Database::execute_select_query(sqlite3_stmt* stmt) {
     vector<vector<string>> result;
@@ -46,6 +50,7 @@ vector<vector<string>> Database::execute_select_query(sqlite3_stmt* stmt) {
     return result;
 }
 
+
 bool Database::execute_insert_query(sqlite3_stmt* stmt) {
     if(sqlite3_step(stmt) != SQLITE_DONE){
         cout << "Error executing statement: " << sqlite3_errmsg(db) << endl;
@@ -57,7 +62,8 @@ bool Database::execute_insert_query(sqlite3_stmt* stmt) {
     return 0;
 }
 
-sqlite3_stmt* Database::prepare_and_bind_int(const char* query, const vector<int>& intParams) {
+
+sqlite3_stmt* Database::prepare_and_bind_int(const char* query, const vector<int>& int_params) {
     sqlite3_stmt* stmt = nullptr;
 
     if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) {
@@ -65,8 +71,8 @@ sqlite3_stmt* Database::prepare_and_bind_int(const char* query, const vector<int
         return nullptr;
     }
 
-    for (int i = 0; i < intParams.size(); ++i) {
-        if (sqlite3_bind_int(stmt, i + 1, intParams[i]) != SQLITE_OK) {
+    for (int i = 0; i < int_params.size(); ++i) {
+        if (sqlite3_bind_int(stmt, i + 1, int_params[i]) != SQLITE_OK) {
             cout << "Error binding parameter: " << sqlite3_errmsg(db) << endl;
             sqlite3_finalize(stmt);
             return nullptr;
@@ -75,6 +81,7 @@ sqlite3_stmt* Database::prepare_and_bind_int(const char* query, const vector<int
 
     return stmt;
 }
+
 
 vector<vector<string>> Database::get_students_by_section(int section_id){
     vector<vector<string>> result; 
@@ -146,6 +153,7 @@ bool Database::take_attendance(string date, string attendance_status, int sectio
 
     return execute_insert_query(stmt);
 }
+
 
 void Database::print_data(vector<vector<string>> data){
     for (const auto& row : data) {

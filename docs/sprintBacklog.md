@@ -13,8 +13,8 @@
 ### Format:
 | Task ID | Task Description | User Story ID | Assigned To | Status | Dependencies |
 |---------|------------------|---------------|-------------|--------|--------------|
-| T-1 | Design initial menu | US-1 | UI Team | To Do | None |
-| T-2 | Design & Implement Database Tables | US-2 | Data Team | To Do | None |
+| T-1 | Design initial menu  | US-1          | UI Team     | To Do  |         None |
+| T-2 | Design & Implement Database Tables   | US-2        | Data Team | To Do | None  |
 | T-3 | View Attendance Page | US-3 | UI Team | To Do | T-3 |
 | T-4 | Query Database to retrieve Attendance information | US-2 | Data Team | To Do | T-2 |
 | T-5 | Ability to add course of students | US-4 | Data Team | To Do | T-2 | 
