@@ -97,9 +97,8 @@ bool returnToMainMenu(int selection){
 }
 int displaySemester(){
     cout <<"\nSelect Semester" << endl;
-    cout << "1) Fall 2024" << endl;
-    cout << "2) Spring 2024" << endl;
-    cout << "3) Fall 2023" << endl;
+    vector<vector<string>> semesters = db.get_semseters();
+    db.print_data(semesters);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl;
 
     return readUserInput();
