@@ -11,6 +11,8 @@ int displaySemester();
 int displayDate();
 bool returnToMainMenu(int selection);
 void displayAttendance(int course, int date);
+void displayStudentAttendacne(int course, int studentId);
+int giveStudentId(int course);
 
 void printMainMenu(){
     cout <<"Enter the number to select" << endl;
@@ -109,6 +111,22 @@ void displayAttendance(int course, int date){
     cout << "Student 2: P" << endl;
     cout << "Student 3: P" << endl;
 }
+int giveStudentId(int course){
+    int courseTemp = 5;
+    for (int i = 0; i < courseTemp; i++){
+        cout << i+1 << ") Student " << i+1 << endl;
+    }
+    cout << "\n\nEnter -1 To Return to Main Menu" << endl;
+    int studentId = readUserInput();
+    return studentId;
+}
+void displayStudentAttendacne(int course, int studentId){
+    int courseTempDates = 30;
+    string present = "P";
+    for (int i = 0; i < courseTempDates; i++){
+        cout << i+1 << " for Student " << studentId << ": " << present << endl;
+    }
+}
 
 int main()
 {
@@ -122,6 +140,7 @@ int main()
     int course = 0;
     int semester = 0;
     int date = 0;
+    int studentId = 0;
     
     while (endProgram == false){
         
@@ -132,7 +151,7 @@ int main()
                 displayStudents(course);
                 break;
             case 2:
-                cout <<"\nDisplay Attendance" << endl;
+                //cout <<"\nDisplay Attendance" << endl;
                 semester = displaySemester();
                 if(returnToMainMenu(semester)) break;
                 course = displayCourses();
@@ -143,6 +162,14 @@ int main()
                 break;
             case 3:
                 cout <<"\nShow Student Attendace" << endl;
+                //need semester and course, then select student
+                semester = displaySemester();
+                if(returnToMainMenu(semester)) break;
+                course = displayCourses();
+                if(returnToMainMenu(course)) break;
+                studentId = giveStudentId(course);
+                if (returnToMainMenu(studentId)) break;
+                displayStudentAttendacne(course, studentId);
                 break;
             case 4:
                 cout <<"\nAdd Corse" << endl;
