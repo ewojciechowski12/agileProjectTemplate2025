@@ -14,10 +14,14 @@ public:
 
     void print_data(vector<vector<string>> data);
     vector<vector<string>> get_students_by_section(int section_id);
+    vector<vector<string>> get_students_id_by_section(int section_id);
     vector<vector<string>> get_semseters();
-    vector<vector<string>> get_courses_sections_by_semseter(int semester_id);
+    vector<vector<string>> get_courses_sections_by_semester(int semester_id);
     
     bool take_attendance(string date, string attendance_status, int section_id, int student_id);
+    bool update_attendance(string date, string attendance_status, int section_id, int student_id);
+    bool mark_all_students_present(string date, int section_id);
+    bool mark_all_students_present(string date, string attendance_status, int section_id, int student_id);
 
 private:
     sqlite3* db;

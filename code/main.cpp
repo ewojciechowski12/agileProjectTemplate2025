@@ -2,19 +2,27 @@
 #include <string>
 #include <ctype.h>
 #include "database.hpp"
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 void printMainMenu();
 bool is_digits(string& str);
 int readUserInput();
-int displayCourses();
-void displayStudents(int course);
+int displayCourses(int semester);
+int displayStudents(int course);
 int displaySemester();
 int displayDate();
 bool returnToMainMenu(int selection);
-void displayAttendance(int course, int date);
+void displayAttendance(int course, string date);
 void displayStudentAttendacne(int course, int studentId);
 int giveStudentId(int course);
+void changeAttendanceValue(string date, int studentId, int sectionId);
+
+const char* filename = "attendance_application.db";
+
+Database db = Database(filename);
 
 void printMainMenu(){
     cout <<"Enter the number to select" << endl;
@@ -57,29 +65,30 @@ int readUserInput(){
     return stoi(menuOption);
 }
 
-int displayCourses(){    
+int displayCourses(int semester){    
 
     // TO DO : Display Courses from Database instead of harcoded
     cout <<"\nSelect Course" << endl;
-    cout << "1) Course 1" << endl;
-    cout << "2) Course 2" << endl;
-    cout << "3) Course 3" << endl;
+    // cout << "1) Course 1" << endl;
+    // cout << "2) Course 2" << endl;
+    // cout << "3) Course 3" << endl;
+    vector<vector<string>> courses = db.get_courses_sections_by_semester(semester);
+    db.print_data(courses);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl; 
     
     return readUserInput();
 }
 
-void displayStudents(int course){
+int displayStudents(int course){
     int stuNumber = 0;
 
     // TO DO : Display Students from Database instead of harcoded
     cout <<"\nSelect Student" << endl;
-    cout << "1) Student 1" << endl;
-    cout << "2) Student 2" << endl;
-    cout << "3) Student 3" << endl; 
-
+    vector<vector<string>> students = db.get_students_by_section(course); 
+    db.print_data(students);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl;    
 
+    return readUserInput();
 }
 
 // Function to display attendance status
@@ -93,9 +102,8 @@ bool returnToMainMenu(int selection){
 }
 int displaySemester(){
     cout <<"\nSelect Semester" << endl;
-    cout << "1) Fall 2024" << endl;
-    cout << "2) Spring 2024" << endl;
-    cout << "3) Fall 2023" << endl;
+    vector<vector<string>> semesters = db.get_semseters();
+    db.print_data(semesters);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl;
 
     return readUserInput();
@@ -110,7 +118,7 @@ int displayDate(){
     return readUserInput();
 }
 
-void displayAttendance(int course, int date){
+void displayAttendance(int course, string date){
     cout << "Student 1: P" << endl;
     cout << "Student 2: P" << endl;
     cout << "Student 3: P" << endl;
@@ -133,19 +141,23 @@ void displayStudentAttendacne(int course, int studentId){
 }
 
 // Function to change attendance value for student
-void changeAttendanceValue(){
-    int selection = 0;
+void changeAttendanceValue(string date, int studentId, int sectionId){
+    //date, attedance_status, student_id, section_id
+    string status = "";
     // To DO : database instruction to update atendance status
+    //db.take_attendance()
     cout << "\nEnter Student Number to Edit Attendance Status" << endl;
     
     //validate input
     cout << "\nSelect Attendance Status" << endl;
-    cout << "1) Late" << endl;
-    cout << "2) Absent" << endl;  
-    cout << "3) Cancel" << endl; 
-    cin >> selection;
-    
-    
+    cout << "L) Late" << endl;
+    cout << "A) Absent" << endl;
+    cout << "C) Cancel" << endl; 
+    cin >> status;
+
+    if (db.update_attendance(date, status, sectionId, studentId) == 1){
+        cout << "Error taking attendance." << endl;
+    }
 }
 
 
@@ -153,6 +165,13 @@ int main()
 {
     bool endProgram = false;
     cout << "Welcome To The Attendance Assistant\n" << endl;
+    
+    time_t t = time(nullptr);
+    tm* now = localtime(&t);
+    ostringstream oss;
+    oss << put_time(now, "%Y-%m-%d");
+    string date = oss.str();
+
     printMainMenu();
 
     // Read user input
@@ -160,26 +179,35 @@ int main()
 
     int course = 0;
     int semester = 0;
-    int date = 0;
     int studentId = 0;
-    
+
     while (endProgram == false){
         
         switch (menuSelection){
             case 1:                
-                course = displayCourses();
+                semester = displaySemester();
+                course = displayCourses(semester);
+                cout << "Marking all students as present" << endl;
+                db.mark_all_students_present(date, course);
                 if(returnToMainMenu(course)) break;
-                displayStudents(course);
-                changeAttendanceValue();
+                while (true){
+                    cout << "\n\nEnter -1 To Return to Main Menu" << endl;
+                    studentId = displayStudents(course);
+                    if (studentId == -1){
+                        break;
+                    }
+                    // cout << "Student ID: " << studentId  << "Date: " << date << "Course: " << course << endl;
+                    changeAttendanceValue(date, studentId, course);
+                }
                 break;
             case 2:
                 //cout <<"\nDisplay Attendance" << endl;
                 semester = displaySemester();
                 if(returnToMainMenu(semester)) break;
-                course = displayCourses();
+                course = displayCourses(semester);
                 if(returnToMainMenu(course)) break;
                 date = displayDate();
-                if(returnToMainMenu(date)) break;
+                //if(returnToMainMenu(date)) break;
                 displayAttendance(course, date);
                 break;
             case 3:
@@ -187,7 +215,7 @@ int main()
                 //need semester and course, then select student
                 semester = displaySemester();
                 if(returnToMainMenu(semester)) break;
-                course = displayCourses();
+                course = displayCourses(semester);
                 if(returnToMainMenu(course)) break;
                 studentId = giveStudentId(course);
                 if (returnToMainMenu(studentId)) break;

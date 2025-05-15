@@ -7,11 +7,7 @@ using namespace std;
 Database::Database(const char* filename) : db(nullptr) {
     int statusOfOpen = sqlite3_open(filename, &db);
 
-    if (statusOfOpen == SQLITE_OK) {
-        cout << "Successfully opened the database" << endl;
-    }
-
-    else {
+    if (statusOfOpen != SQLITE_OK) {
         cout << "Problem opening the database: " << sqlite3_errmsg(db) << endl;
         db = nullptr;
     }
@@ -98,6 +94,21 @@ vector<vector<string>> Database::get_students_by_section(int section_id){
     return execute_select_query(stmt);
 }
 
+vector<vector<string>> Database::get_students_id_by_section(int section_id){
+    vector<vector<string>> result; 
+    
+    const char* query = "SELECT Students.student_id "
+                    "FROM Students, StudentsInSections " 
+                    "WHERE Students.student_id = StudentsInSections.student_id "
+                    "AND StudentsInSections.section_id = ?";
+
+    sqlite3_stmt* stmt = prepare_and_bind_int(query, {section_id});
+
+    if (!stmt) return {};
+
+    return execute_select_query(stmt);
+}
+
 
 vector<vector<string>> Database::get_semseters(){
     vector<vector<string>> result; 
@@ -113,7 +124,7 @@ vector<vector<string>> Database::get_semseters(){
 }
 
 
-vector<vector<string>> Database::get_courses_sections_by_semseter(int semester_id){
+vector<vector<string>> Database::get_courses_sections_by_semester(int semester_id){
     vector<vector<string>> result; 
     
     const char* query = "SELECT Sections.section_id, Courses.name || ' - ' || Sections.section_number "
@@ -129,7 +140,6 @@ vector<vector<string>> Database::get_courses_sections_by_semseter(int semester_i
 
     return execute_select_query(stmt);
 }
-
 
 bool Database::take_attendance(string date, string attendance_status, int section_id, int student_id){
     const char* query = "INSERT INTO Attendance (date, attendance_status, section_id, student_id) "
@@ -152,6 +162,46 @@ bool Database::take_attendance(string date, string attendance_status, int sectio
     }
 
     return execute_insert_query(stmt);
+}
+
+bool Database::update_attendance(string date, string attendance_status, int section_id, int student_id){
+    //cout << "Updating student " << student_id << " to status " << attendance_status << endl;
+    const char* query = 
+    "UPDATE Attendance SET attendance_status = ? "
+    "WHERE date = ? AND section_id = ? AND student_id = ?";
+
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2(db, query, -1, &stmt, nullptr) != SQLITE_OK) {
+        cout << "Error preparing statement: " << sqlite3_errmsg(db) << endl;
+        return 1;
+    }
+
+    if (sqlite3_bind_text(stmt, 1, attendance_status.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_text(stmt, 2, date.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK ||
+        sqlite3_bind_int(stmt, 3, section_id) != SQLITE_OK ||
+        sqlite3_bind_int(stmt, 4, student_id) != SQLITE_OK) {
+        cout << "Error binding parameters: " << sqlite3_errmsg(db) << endl;
+        return 1;
+    }
+
+    return execute_insert_query(stmt);
+}
+
+bool Database::mark_all_students_present(string date, int section_id){
+    string attendance_status = "P";
+
+    vector<vector<string>> student_ids = get_students_id_by_section(section_id);
+
+    for (const auto& row : student_ids) {
+        for (const auto& id : row) {
+            if(take_attendance(date, attendance_status, section_id, stoi(id)) == 1){
+                return 1;
+            } 
+        }
+    }
+
+    return 0;
 }
 
 
