@@ -15,9 +15,10 @@ int displayStudents(int course);
 int displaySemester();
 int displayDate();
 bool returnToMainMenu(int selection);
-void displayAttendance(int course, int date);
+void displayAttendance(int course, string date);
 void displayStudentAttendacne(int course, int studentId);
 int giveStudentId(int course);
+void changeAttendanceValue(string date, int studentId, int sectionId);
 
 const char* filename = "attendance_application.db";
 
@@ -71,7 +72,7 @@ int displayCourses(int semester){
     // cout << "1) Course 1" << endl;
     // cout << "2) Course 2" << endl;
     // cout << "3) Course 3" << endl;
-    vector<vector<string>> courses = db.get_courses_sections_by_semseter(semester);
+    vector<vector<string>> courses = db.get_courses_sections_by_semester(semester);
     db.print_data(courses);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl; 
     
@@ -117,7 +118,7 @@ int displayDate(){
     return readUserInput();
 }
 
-void displayAttendance(int course, int date){
+void displayAttendance(int course, string date){
     cout << "Student 1: P" << endl;
     cout << "Student 2: P" << endl;
     cout << "Student 3: P" << endl;
@@ -140,19 +141,23 @@ void displayStudentAttendacne(int course, int studentId){
 }
 
 // Function to change attendance value for student
-void changeAttendanceValue(int studentId){
+void changeAttendanceValue(string date, int studentId, int sectionId){
     //date, attedance_status, student_id, section_id
-    int selection = 0;
+    string status = "";
     // To DO : database instruction to update atendance status
     //db.take_attendance()
     cout << "\nEnter Student Number to Edit Attendance Status" << endl;
     
     //validate input
     cout << "\nSelect Attendance Status" << endl;
-    cout << "1) Late" << endl;
-    cout << "2) Absent" << endl;  
-    cout << "3) Cancel" << endl; 
-    cin >> selection;
+    cout << "L) Late" << endl;
+    cout << "A) Absent" << endl;
+    cout << "C) Cancel" << endl; 
+    cin >> status;
+
+    if (db.update_attendance(date, status, sectionId, studentId) == 1){
+        cout << "Error taking attendance." << endl;
+    }
 }
 
 
@@ -160,6 +165,13 @@ int main()
 {
     bool endProgram = false;
     cout << "Welcome To The Attendance Assistant\n" << endl;
+    
+    time_t t = time(nullptr);
+    tm* now = localtime(&t);
+    ostringstream oss;
+    oss << put_time(now, "%Y-%m-%d");
+    string date = oss.str();
+
     printMainMenu();
 
     // Read user input
@@ -167,29 +179,27 @@ int main()
 
     int course = 0;
     int semester = 0;
-    int date = 0;
     int studentId = 0;
 
-    // time_t t = time(nullptr);
-    // tm* now = localtime(&t);
-
-    // ostringstream oss;
-    // oss << put_time(now, "%Y-%m-%d");
-    // string dateStr = oss.str();
-    cout <<"TEST" << endl;
-    // cout << "Date as string: " << dateStr << endl;
-
-
-    
     while (endProgram == false){
         
         switch (menuSelection){
             case 1:                
                 semester = displaySemester();
                 course = displayCourses(semester);
+                date = "2027-01-01";
+                cout << "Marking all students as present" << endl;
+                db.mark_all_students_present(date, course);
                 if(returnToMainMenu(course)) break;
-                studentId = displayStudents(course);
-                changeAttendanceValue(studentId);
+                while (true){
+                    cout << "\n\nEnter -1 To Return to Main Menu" << endl;
+                    studentId = displayStudents(course);
+                    if (studentId == -1){
+                        break;
+                    }
+                    // cout << "Student ID: " << studentId  << "Date: " << date << "Course: " << course << endl;
+                    changeAttendanceValue(date, studentId, course);
+                }
                 break;
             case 2:
                 //cout <<"\nDisplay Attendance" << endl;
@@ -198,11 +208,11 @@ int main()
                 course = displayCourses(semester);
                 if(returnToMainMenu(course)) break;
                 date = displayDate();
-                if(returnToMainMenu(date)) break;
+                //if(returnToMainMenu(date)) break;
                 displayAttendance(course, date);
                 break;
             case 3:
-                cout <<"\nShow Student Attendace!!!!!!!" << endl;
+                cout <<"\nShow Student Attendace" << endl;
                 //need semester and course, then select student
                 semester = displaySemester();
                 if(returnToMainMenu(semester)) break;
