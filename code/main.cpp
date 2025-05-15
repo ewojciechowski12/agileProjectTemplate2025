@@ -2,13 +2,16 @@
 #include <string>
 #include <ctype.h>
 #include "database.hpp"
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 void printMainMenu();
 bool is_digits(string& str);
 int readUserInput();
-int displayCourses();
-void displayStudents(int course);
+int displayCourses(int semester);
+int displayStudents(int course);
 int displaySemester();
 int displayDate();
 bool returnToMainMenu(int selection);
@@ -61,21 +64,21 @@ int readUserInput(){
     return stoi(menuOption);
 }
 
-int displayCourses(){    
+int displayCourses(int semester){    
 
     // TO DO : Display Courses from Database instead of harcoded
     cout <<"\nSelect Course" << endl;
     // cout << "1) Course 1" << endl;
     // cout << "2) Course 2" << endl;
     // cout << "3) Course 3" << endl;
-    vector<vector<string>> courses = db.get_courses_sections_by_semseter(1);
+    vector<vector<string>> courses = db.get_courses_sections_by_semseter(semester);
     db.print_data(courses);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl; 
     
     return readUserInput();
 }
 
-void displayStudents(int course){
+int displayStudents(int course){
     int stuNumber = 0;
 
     // TO DO : Display Students from Database instead of harcoded
@@ -84,6 +87,7 @@ void displayStudents(int course){
     db.print_data(students);
     cout << "\n\nEnter -1 To Return to Main Menu" << endl;    
 
+    return readUserInput();
 }
 
 // Function to display attendance status
@@ -136,9 +140,11 @@ void displayStudentAttendacne(int course, int studentId){
 }
 
 // Function to change attendance value for student
-void changeAttendanceValue(){
+void changeAttendanceValue(int studentId){
+    //date, attedance_status, student_id, section_id
     int selection = 0;
     // To DO : database instruction to update atendance status
+    //db.take_attendance()
     cout << "\nEnter Student Number to Edit Attendance Status" << endl;
     
     //validate input
@@ -147,8 +153,6 @@ void changeAttendanceValue(){
     cout << "2) Absent" << endl;  
     cout << "3) Cancel" << endl; 
     cin >> selection;
-    
-    
 }
 
 
@@ -165,32 +169,44 @@ int main()
     int semester = 0;
     int date = 0;
     int studentId = 0;
+
+    // time_t t = time(nullptr);
+    // tm* now = localtime(&t);
+
+    // ostringstream oss;
+    // oss << put_time(now, "%Y-%m-%d");
+    // string dateStr = oss.str();
+    cout <<"TEST" << endl;
+    // cout << "Date as string: " << dateStr << endl;
+
+
     
     while (endProgram == false){
         
         switch (menuSelection){
             case 1:                
-                course = displayCourses();
+                semester = displaySemester();
+                course = displayCourses(semester);
                 if(returnToMainMenu(course)) break;
-                displayStudents(course);
-                changeAttendanceValue();
+                studentId = displayStudents(course);
+                changeAttendanceValue(studentId);
                 break;
             case 2:
                 //cout <<"\nDisplay Attendance" << endl;
                 semester = displaySemester();
                 if(returnToMainMenu(semester)) break;
-                course = displayCourses();
+                course = displayCourses(semester);
                 if(returnToMainMenu(course)) break;
                 date = displayDate();
                 if(returnToMainMenu(date)) break;
                 displayAttendance(course, date);
                 break;
             case 3:
-                cout <<"\nShow Student Attendace" << endl;
+                cout <<"\nShow Student Attendace!!!!!!!" << endl;
                 //need semester and course, then select student
                 semester = displaySemester();
                 if(returnToMainMenu(semester)) break;
-                course = displayCourses();
+                course = displayCourses(semester);
                 if(returnToMainMenu(course)) break;
                 studentId = giveStudentId(course);
                 if (returnToMainMenu(studentId)) break;
