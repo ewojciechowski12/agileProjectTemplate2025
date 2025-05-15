@@ -7,11 +7,7 @@ using namespace std;
 Database::Database(const char* filename) : db(nullptr) {
     int statusOfOpen = sqlite3_open(filename, &db);
 
-    if (statusOfOpen == SQLITE_OK) {
-        cout << "Successfully opened the database" << endl;
-    }
-
-    else {
+    if (statusOfOpen != SQLITE_OK) {
         cout << "Problem opening the database: " << sqlite3_errmsg(db) << endl;
         db = nullptr;
     }
@@ -169,7 +165,7 @@ bool Database::take_attendance(string date, string attendance_status, int sectio
 }
 
 bool Database::update_attendance(string date, string attendance_status, int section_id, int student_id){
-    cout << "Updating student " << student_id << " to status " << attendance_status << endl;
+    //cout << "Updating student " << student_id << " to status " << attendance_status << endl;
     const char* query = 
     "UPDATE Attendance SET attendance_status = ? "
     "WHERE date = ? AND section_id = ? AND student_id = ?";
@@ -195,17 +191,13 @@ bool Database::update_attendance(string date, string attendance_status, int sect
 bool Database::mark_all_students_present(string date, int section_id){
     string attendance_status = "P";
 
-    // const char* query = "INSERT INTO Attendance (date, attendance_status, section_id, student_id) "
-    //                     "VALUES (?, ?, ?, ?)";
-
     vector<vector<string>> student_ids = get_students_id_by_section(section_id);
 
     for (const auto& row : student_ids) {
         for (const auto& id : row) {
             if(take_attendance(date, attendance_status, section_id, stoi(id)) == 1){
                 return 1;
-            }
-            
+            } 
         }
     }
 

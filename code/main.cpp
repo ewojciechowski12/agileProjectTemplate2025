@@ -187,7 +187,6 @@ int main()
             case 1:                
                 semester = displaySemester();
                 course = displayCourses(semester);
-                date = "2027-01-01";
                 cout << "Marking all students as present" << endl;
                 db.mark_all_students_present(date, course);
                 if(returnToMainMenu(course)) break;
